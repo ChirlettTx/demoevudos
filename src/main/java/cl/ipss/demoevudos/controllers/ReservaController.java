@@ -1,15 +1,11 @@
 package cl.ipss.demoevudos.controllers;
 
 import cl.ipss.demoevudos.dto.ReservaDTO;
-import cl.ipss.demoevudos.models.Cliente;
-import cl.ipss.demoevudos.models.Mesa;
 import cl.ipss.demoevudos.models.Reserva;
 import cl.ipss.demoevudos.repository.ClienteRepository;
 import cl.ipss.demoevudos.repository.MesaRepository;
 import cl.ipss.demoevudos.repository.ReservaRepository;
 import jakarta.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,60 +18,64 @@ import java.util.List;
 @RequestMapping("/reservas")
 public class ReservaController {
 
-    @Autowired
-    private ReservaRepository reservaRepository;
+    private static final String ATTR_MESAS = "mesas";
+    private static final String ATTR_CLIENTES = "clientes";
+    private static final String ATTR_RESERVA_DTO = "reservaDTO";
+    private static final String VIEW_FORM = "reservas/form";
+    private static final String VIEW_LISTA = "reservas/lista";
+    private static final String REDIRECT_LISTA = "redirect:/reservas";
 
-    @Autowired
-    private MesaRepository mesaRepository;
+    private final ReservaRepository reservaRepository;
+    private final MesaRepository mesaRepository;
+    private final ClienteRepository clienteRepository;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    public ReservaController(
+        ReservaRepository reservaRepository,
+        MesaRepository mesaRepository,
+        ClienteRepository clienteRepository
+    ) {
+        this.reservaRepository = reservaRepository;
+        this.mesaRepository = mesaRepository;
+        this.clienteRepository = clienteRepository;
+    }
 
-    // ⭐ LISTAR TODAS LAS RESERVAS
     @GetMapping
     public String listarReservas(Model model) {
         model.addAttribute("reservas", reservaRepository.findAll());
-        return "reservas/lista";
+        return VIEW_LISTA;
     }
 
-    // ⭐ FORMULARIO PARA CREAR NUEVA RESERVA
     @GetMapping("/nueva")
-    public String mostrarFormulario(Model model) {
-        ReservaDTO reservaDTO = new ReservaDTO();
-        model.addAttribute("reservaDTO", reservaDTO);
-
-        model.addAttribute("mesas", mesaRepository.findAll());
-        model.addAttribute("clientes", clienteRepository.findAll());
-
-        return "reservas/form";
+    public String mostrarFormularioNuevaReserva(Model model) {
+        model.addAttribute(ATTR_RESERVA_DTO, new ReservaDTO());
+        model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
+        model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
+        return VIEW_FORM;
     }
 
-    // ⭐ GUARDAR RESERVA
     @PostMapping("/guardar")
     public String guardarReserva(
-            @Valid @ModelAttribute("reservaDTO") ReservaDTO reservaDTO,
-            BindingResult result,
-            Model model) {
+        @Valid @ModelAttribute(ATTR_RESERVA_DTO) ReservaDTO reservaDTO,
+        BindingResult result,
+        Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("mesas", mesaRepository.findAll());
-            model.addAttribute("clientes", clienteRepository.findAll());
-            return "reservas/form";
+            model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
+            model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
+            return VIEW_FORM;
         }
 
-        // Validación anti-duplicado
         boolean existe = reservaRepository.existsByFechaAndHoraAndMesaId(
-        reservaDTO.getFechaHora().toLocalDate(),
-        reservaDTO.getFechaHora().toLocalTime(),
-        reservaDTO.getMesaId()
+                reservaDTO.getFechaHora().toLocalDate(),
+                reservaDTO.getFechaHora().toLocalTime(),
+                reservaDTO.getMesaId()
         );
-
         if (existe) {
             result.rejectValue("hora", "error.reservaDTO",
                     "Ya existe una reserva para esta mesa en ese horario.");
-            model.addAttribute("mesas", mesaRepository.findAll());
-            model.addAttribute("clientes", clienteRepository.findAll());
-            return "reservas/form";
+            model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
+            model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
+            return VIEW_FORM;
         }
 
         Reserva reserva = new Reserva();
@@ -83,30 +83,24 @@ public class ReservaController {
         reserva.setHora(reservaDTO.getFechaHora().toLocalTime());
         reserva.setMesa(mesaRepository.findById(reservaDTO.getMesaId()).orElse(null));
         reserva.setCliente(clienteRepository.findById(reservaDTO.getClienteId()).orElse(null));
-        reserva.setEstado("ACTIVA"); // opcional pero recomendado
+        reserva.setEstado("ACTIVA");
 
         reservaRepository.save(reserva);
-
-        return "redirect:/reservas";
+        return REDIRECT_LISTA;
     }
 
-    // ⭐ ELIMINAR
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         reservaRepository.deleteById(id);
-        return "redirect:/reservas";
+        return REDIRECT_LISTA;
     }
 
-    // ⭐ BUSCAR POR FECHA
     @GetMapping("/buscar")
     public String buscarPorFecha(@RequestParam("fecha") String fechaStr, Model model) {
-
         LocalDate fecha = LocalDate.parse(fechaStr);
         List<Reserva> reservas = reservaRepository.findByFecha(fecha);
-
         model.addAttribute("reservas", reservas);
         model.addAttribute("fechaBuscada", fecha);
-
-        return "reservas/lista";
+        return VIEW_LISTA;
     }
 }
