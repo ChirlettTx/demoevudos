@@ -7,6 +7,8 @@
 <section>
   <h2>Reservas</h2>
   <a class="btn btn-success mb-3" th:href="@{/reservas/nuevo}">Nueva reserva</a>
+  <a class="btn btn-secondary mb-3" th:href="@{/}">Volver al inicio</a>
+
 
   <table class="table table-striped">
     <thead>
@@ -19,7 +21,7 @@
         <td th:text="${r.id}">1</td>
         <td th:text="${r.cliente.nombre}">Cliente</td>
         <td th:text="${r.mesa.nombre}">Mesa</td>
-        <td th:text="${#temporals.format(r.fechaHora, 'dd/MM/yyyy HH:mm')}">fecha</td>
+        <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy')} + ' ' + ${#temporals.format(r.hora, 'HH:mm')}">fecha</td>
         <td th:text="${r.cantidadPersonas}">2</td>
         <td th:text="${r.estado}">ACTIVA</td>
         <td>

@@ -1,6 +1,7 @@
 package cl.ipss.demoevudos.controllers;
 
 import cl.ipss.demoevudos.dto.ReservaDTO;
+import cl.ipss.demoevudos.models.Mesa;
 import cl.ipss.demoevudos.models.Reserva;
 import cl.ipss.demoevudos.repository.ClienteRepository;
 import cl.ipss.demoevudos.repository.MesaRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Controller
 @RequestMapping("/reservas")
@@ -45,7 +47,7 @@ public class ReservaController {
         return VIEW_LISTA;
     }
 
-    @GetMapping("/nueva")
+    @GetMapping({"/nueva", "/nuevo"})
     public String mostrarFormularioNuevaReserva(Model model) {
         model.addAttribute(ATTR_RESERVA_DTO, new ReservaDTO());
         model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
@@ -59,12 +61,23 @@ public class ReservaController {
         BindingResult result,
         Model model) {
 
+        model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
+        model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
+
+        // Validación inicial de errores estándar
         if (result.hasErrors()) {
-            model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
-            model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
             return VIEW_FORM;
         }
 
+        // Validar capacidad de la mesa
+        Mesa mesa = mesaRepository.findById(reservaDTO.getMesaId()).orElse(null);
+        if (mesa != null && reservaDTO.getCantidadPersonas() > mesa.getCapacidad()) {
+            result.rejectValue("cantidadPersonas", "error.reservaDTO",
+                    "La cantidad de personas excede la capacidad de la mesa (" + mesa.getCapacidad() + ").");
+            return VIEW_FORM;
+        }
+
+        // Valida colisión de fecha y hora
         boolean existe = reservaRepository.existsByFechaAndHoraAndMesaId(
                 reservaDTO.getFechaHora().toLocalDate(),
                 reservaDTO.getFechaHora().toLocalTime(),
@@ -73,16 +86,16 @@ public class ReservaController {
         if (existe) {
             result.rejectValue("hora", "error.reservaDTO",
                     "Ya existe una reserva para esta mesa en ese horario.");
-            model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
-            model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
             return VIEW_FORM;
         }
 
+        // Construir y guardar la reserva
         Reserva reserva = new Reserva();
         reserva.setFecha(reservaDTO.getFechaHora().toLocalDate());
         reserva.setHora(reservaDTO.getFechaHora().toLocalTime());
-        reserva.setMesa(mesaRepository.findById(reservaDTO.getMesaId()).orElse(null));
+        reserva.setMesa(mesa);
         reserva.setCliente(clienteRepository.findById(reservaDTO.getClienteId()).orElse(null));
+        reserva.setCantidadPersonas(reservaDTO.getCantidadPersonas());
         reserva.setEstado("ACTIVA");
 
         reservaRepository.save(reserva);
@@ -103,4 +116,26 @@ public class ReservaController {
         model.addAttribute("fechaBuscada", fecha);
         return VIEW_LISTA;
     }
+
+        @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+        Reserva reserva = reservaRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("ID de reserva inválido: " + id));
+
+        ReservaDTO dto = new ReservaDTO();
+        dto.setId(reserva.getId());
+        dto.setClienteId(reserva.getCliente().getId());
+        dto.setMesaId(reserva.getMesa().getId());
+        dto.setCantidadPersonas(reserva.getCantidadPersonas());
+
+        // Unifica fecha y hora en LocalDateTime
+        dto.setFechaHora(reserva.getFecha().atTime(reserva.getHora()));
+
+        model.addAttribute("reservaDTO", dto);
+        model.addAttribute("mesas", mesaRepository.findAll());
+        model.addAttribute("clientes", clienteRepository.findAll());
+        return "reservas/form";
+    }
+
+    
 }

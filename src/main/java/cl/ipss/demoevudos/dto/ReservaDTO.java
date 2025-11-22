@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 
 public class ReservaDTO {
 
+    private Long id; // necesario para editar los formularios
+
     @NotNull(message = "El cliente es obligatorio")
     private Long clienteId;
 
@@ -19,7 +21,10 @@ public class ReservaDTO {
     @Min(value = 1, message = "Debe ingresar al menos 1 persona")
     private int cantidadPersonas;
 
-    // getters y setters
+    // Getters y setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
     public Long getClienteId() { return clienteId; }
     public void setClienteId(Long clienteId) { this.clienteId = clienteId; }
 
