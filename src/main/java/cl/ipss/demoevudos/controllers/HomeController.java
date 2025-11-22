@@ -13,7 +13,7 @@ public class HomeController {
     // Página principal
     @GetMapping({"/", "/home"})
     public String index(Model model) {
-        model.addAttribute(ATTR_TITULO, "Bienvenido a Evu2 Web");
+        model.addAttribute(ATTR_TITULO, "Bienvenido a la Web de Sabor Gourmet");
         model.addAttribute(ATTR_MENSAJE, "Esta es la página de inicio");
         return "index";
     }

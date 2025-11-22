@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/master}">
 <head>
-  <title>Formulario de reserva</title>
+  <title>Formulario de Reserva - Sabor Gourmet</title>
 </head>
 <body>
-<section>
-  <h2 th:text="${reservaDTO.id == null ? 'Nueva reserva' : 'Editar reserva'}">Formulario</h2>
+  <div layout:fragment="page-content">
+    <div class="page-header text-center">
+      <h2 th:text="${reservaDTO.id == null ? 'Nueva Reserva' : 'Editar Reserva'}">Formulario</h2>
+    </div>
 
-  <form th:action="@{/reservas/guardar}" method="post" th:object="${reservaDTO}">
+    <div class="form-wrapper">
+      <form th:action="@{/reservas/guardar}" method="post" th:object="${reservaDTO}">
     <input type="hidden" th:field="*{id}" />
 
      <!-- Errores globales (como conflictos de horario) -->
@@ -59,9 +65,12 @@
       <div th:if="${#fields.hasErrors('cantidadPersonas')}" class="text-danger" th:errors="*{cantidadPersonas}"></div>
     </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a th:href="@{/reservas}" class="btn btn-secondary">Cancelar</a>
-  </form>
-</section>
+        <div class="mt-4">
+          <button class="btn btn-primary" type="submit"> Guardar</button>
+          <a th:href="@{/reservas}" class="btn btn-secondary"> Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

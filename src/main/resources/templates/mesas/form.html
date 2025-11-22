@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
+<html lang="es"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/master}">
 <head>
   <title th:text="${mesa.id == null ? 'Nueva mesa - Sabor Gourmet' : 'Editar mesa - Sabor Gourmet'}">Formulario mesa</title>
 </head>
 <body>
-<section class="py-4">
-  <h2 class="mb-4" th:text="${mesa.id == null ? 'Nueva mesa' : 'Editar mesa'}">Formulario</h2>
+  <div layout:fragment="page-content">
+    <div class="page-header text-center">
+      <h2 th:text="${mesa.id == null ? 'Nueva Mesa' : 'Editar Mesa'}">Formulario</h2>
+    </div>
 
-  <form th:action="@{/mesas/guardar}" method="post" th:object="${mesa}">
+    <div class="form-wrapper">
+      <form th:action="@{/mesas/guardar}" method="post" th:object="${mesa}">
     <input type="hidden" th:field="*{id}" />
 
     <div class="mb-3">
@@ -20,9 +26,12 @@
       <input id="capacidad" type="number" th:field="*{capacidad}" class="form-control" min="1" required/>
     </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a th:href="@{/mesas}" class="btn btn-secondary">Cancelar</a>
-  </form>
-</section>
+        <div class="mt-4">
+          <button class="btn btn-primary" type="submit"> Guardar</button>
+          <a th:href="@{/mesas}" class="btn btn-secondary"> Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

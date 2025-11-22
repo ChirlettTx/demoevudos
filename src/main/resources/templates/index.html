@@ -1,18 +1,50 @@
 <!DOCTYPE html>
-<html lang=" es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/master}">
 <head>
-    <meta charset="UTF-8">
-    <title th:text="${titulo}">Página Principal</title>
+    <title>Inicio - Sabor Gourmet</title>
 </head>
 <body>
-    <h1 th:text="${titulo}">Bienvenido</h1>
-    <p th:text="${mensaje}">Esta es la página principal.</p>
+    <div layout:fragment="page-content">
+        <div class="welcome-section">
+            <h1 th:text="${titulo}">Bienvenido a Sabor Gourmet</h1>
+            <p class="lead" th:text="${mensaje}">Sistema de gestión de reservas</p>
+        </div>
 
-    <nav>
-        <a href="/">Inicio</a> |
-        <a href="/clientes">Clientes</a> |
-        <a href="/reservas">Reservas</a> |
-        <a href="/mesas">Mesas</a>
-    </nav>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-custom">
+                    <div class="card-body feature-card">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
+                        <h3>Clientes</h3>
+                        <p>Gestiona la información de tus clientes de manera eficiente</p>
+                        <a th:href="@{/clientes}" class="btn btn-primary">Ver Clientes</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom">
+                    <div class="card-body feature-card">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
+                        <h3>Reservas</h3>
+                        <p>Administra todas las reservas del restaurante</p>
+                        <a th:href="@{/reservas}" class="btn btn-primary">Ver Reservas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom">
+                    <div class="card-body feature-card">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
+                        <h3>Mesas</h3>
+                        <p>Controla la disponibilidad y capacidad de las mesas</p>
+                        <a th:href="@{/mesas}" class="btn btn-primary">Ver Mesas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

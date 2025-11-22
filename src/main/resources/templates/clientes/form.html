@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" tth:fragment="layout">
+<html lang="es"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/master}">
 <head>
   <title th:text="${cliente.id == null ? 'Nuevo cliente - Sabor Gourmet' : 'Editar cliente - Sabor Gourmet'}">Formulario cliente</title>
 </head>
 <body>
-<section class="py-4">
-  <h2 class="mb-4" th:text="${cliente.id == null ? 'Nuevo cliente' : 'Editar cliente'}">Formulario</h2>
+  <div layout:fragment="page-content">
+    <div class="page-header text-center">
+      <h2 th:text="${cliente.id == null ? 'Nuevo Cliente' : 'Editar Cliente'}">Formulario</h2>
+    </div>
 
-  <form th:action="@{/clientes/guardar}" method="post" th:object="${cliente}">
+    <div class="form-wrapper">
+      <form th:action="@{/clientes/guardar}" method="post" th:object="${cliente}">
     <input type="hidden" th:field="*{id}" />
 
     <div class="mb-3">
@@ -25,9 +31,12 @@
       <input id="telefono" type="text" th:field="*{telefono}" class="form-control"/>
     </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
-  </form>
-</section>
+        <div class="mt-4">
+          <button class="btn btn-primary" type="submit"> Guardar</button>
+          <a th:href="@{/clientes}" class="btn btn-secondary"> Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
