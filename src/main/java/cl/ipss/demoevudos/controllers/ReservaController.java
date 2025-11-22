@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @Controller
 @RequestMapping("/reservas")
 public class ReservaController {
@@ -63,8 +62,7 @@ public class ReservaController {
 
         model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
         model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
-
-        // Validación inicial de errores estándar
+            System.out.println("FechaHora ingresada: " + reservaDTO.getFechaHora());    
         if (result.hasErrors()) {
             return VIEW_FORM;
         }
@@ -84,12 +82,10 @@ public class ReservaController {
                 reservaDTO.getMesaId()
         );
         if (existe) {
-            result.rejectValue("hora", "error.reservaDTO",
-                    "Ya existe una reserva para esta mesa en ese horario.");
+            result.reject("error.horarioOcupado", "Ya existe una reserva para esta mesa en ese horario.");
             return VIEW_FORM;
         }
 
-        // Construir y guardar la reserva
         Reserva reserva = new Reserva();
         reserva.setFecha(reservaDTO.getFechaHora().toLocalDate());
         reserva.setHora(reservaDTO.getFechaHora().toLocalTime());
@@ -98,11 +94,34 @@ public class ReservaController {
         reserva.setCantidadPersonas(reservaDTO.getCantidadPersonas());
         reserva.setEstado("ACTIVA");
 
+        // Si id es distinto de null, es edición
+        if (reservaDTO.getId() != null) {
+            reserva.setId(reservaDTO.getId());
+        }
+
         reservaRepository.save(reserva);
         return REDIRECT_LISTA;
     }
 
-    @GetMapping("/eliminar/{id}")
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+        Reserva reserva = reservaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("ID de reserva inválido: " + id));
+
+        ReservaDTO dto = new ReservaDTO();
+        dto.setId(reserva.getId());
+        dto.setClienteId(reserva.getCliente().getId());
+        dto.setMesaId(reserva.getMesa().getId());
+        dto.setCantidadPersonas(reserva.getCantidadPersonas());
+        dto.setFechaHora(reserva.getFecha().atTime(reserva.getHora()));
+
+        model.addAttribute(ATTR_RESERVA_DTO, dto);
+        model.addAttribute(ATTR_MESAS, mesaRepository.findAll());
+        model.addAttribute(ATTR_CLIENTES, clienteRepository.findAll());
+        return VIEW_FORM;
+    }
+
+    @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         reservaRepository.deleteById(id);
         return REDIRECT_LISTA;
@@ -116,26 +135,4 @@ public class ReservaController {
         model.addAttribute("fechaBuscada", fecha);
         return VIEW_LISTA;
     }
-
-        @GetMapping("/editar/{id}")
-    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
-        Reserva reserva = reservaRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("ID de reserva inválido: " + id));
-
-        ReservaDTO dto = new ReservaDTO();
-        dto.setId(reserva.getId());
-        dto.setClienteId(reserva.getCliente().getId());
-        dto.setMesaId(reserva.getMesa().getId());
-        dto.setCantidadPersonas(reserva.getCantidadPersonas());
-
-        // Unifica fecha y hora en LocalDateTime
-        dto.setFechaHora(reserva.getFecha().atTime(reserva.getHora()));
-
-        model.addAttribute("reservaDTO", dto);
-        model.addAttribute("mesas", mesaRepository.findAll());
-        model.addAttribute("clientes", clienteRepository.findAll());
-        return "reservas/form";
-    }
-
-    
 }

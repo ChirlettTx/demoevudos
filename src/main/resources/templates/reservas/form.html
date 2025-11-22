@@ -10,12 +10,21 @@
   <form th:action="@{/reservas/guardar}" method="post" th:object="${reservaDTO}">
     <input type="hidden" th:field="*{id}" />
 
+     <!-- Errores globales (como conflictos de horario) -->
+    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger mb-3">
+      <ul>
+        <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+      </ul>
+    </div>
+
+
     <!-- Cliente -->
     <div class="mb-3">
       <label for="clienteId" class="form-label">Cliente</label>
       <select id="clienteId" th:field="*{clienteId}" class="form-select" required>
         <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nombre}">Seleccionar cliente</option>
       </select>
+      <div th:if="${#fields.hasErrors('clienteId')}" class="text-danger" th:errors="*{clienteId}"></div>
     </div>
 
     <!-- Mesa -->
@@ -24,6 +33,7 @@
       <select id="mesaId" th:field="*{mesaId}" class="form-select" required>
         <option th:each="m : ${mesas}" th:value="${m.id}" th:text="${m.nombre + ' (capacidad: ' + m.capacidad + ')'}">Seleccionar mesa</option>
       </select>
+      <div th:if="${#fields.hasErrors('mesaId')}" class="text-danger" th:errors="*{mesaId}"></div>
     </div>
 
     <!-- Fecha y Hora -->
@@ -34,6 +44,7 @@
              type="datetime-local"
              class="form-control"
              required />
+      <div th:if="${#fields.hasErrors('fechaHora')}" class="text-danger" th:errors="*{fechaHora}"></div>
     </div>
 
     <!-- Cantidad de Personas -->
@@ -45,6 +56,7 @@
              class="form-control"
              min="1"
              required />
+      <div th:if="${#fields.hasErrors('cantidadPersonas')}" class="text-danger" th:errors="*{cantidadPersonas}"></div>
     </div>
 
     <button class="btn btn-primary" type="submit">Guardar</button>
