@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
+<head>
+  <title>Mesas - Sabor Gourmet</title>
+</head>
+<body>
+<section class="py-4">
+  <h2 class="mb-4">Mesas</h2>
+  <a class="btn btn-success mb-3" th:href="@{/mesas/nuevo}">Nueva mesa</a>
+
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Capacidad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="m : ${mesas}">
+        <td th:text="${m.id}">1</td>
+        <td th:text="${m.nombre}">Mesa 1</td>
+        <td th:text="${m.capacidad}">4</td>
+        <td>
+          <a th:href="@{|/mesas/editar/${m.id}|}" class="btn btn-sm btn-primary">Editar</a>
+          <form th:action="@{|/mesas/eliminar/${m.id}|}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta mesa?');">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
+<head>
+  <title th:text="${mesa.id == null ? 'Nueva mesa - Sabor Gourmet' : 'Editar mesa - Sabor Gourmet'}">Formulario mesa</title>
+</head>
+<body>
+<section class="py-4">
+  <h2 class="mb-4" th:text="${mesa.id == null ? 'Nueva mesa' : 'Editar mesa'}">Formulario</h2>
+
+  <form th:action="@{/mesas/guardar}" method="post" th:object="${mesa}">
+    <input type="hidden" th:field="*{id}" />
+
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre</label>
+      <input id="nombre" type="text" th:field="*{nombre}" class="form-control" required/>
+    </div>
+
+    <div class="mb-3">
+      <label for="capacidad" class="form-label">Capacidad</label>
+      <input id="capacidad" type="number" th:field="*{capacidad}" class="form-control" min="1" required/>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a th:href="@{/mesas}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</section>
+</body>
+</html>

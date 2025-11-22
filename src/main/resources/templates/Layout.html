@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title th:replace="~{::title}">Mi App</title>
+</head>
+<body>
+    <header>
+        <h1>Mi Aplicación</h1>
+        <nav>
+            <a th:href="@{/}">Inicio</a> |
+            <a th:href="@{/form}">Formulario</a>
+        </nav>
+        <hr/>
+    </header>
+
+    <main th:replace="~{::body}"></main>
+
+    <footer>
+        <hr/>
+        <p>© 2025 Mi Empresa</p>
+    </footer>
+</body>
+</html>
+s

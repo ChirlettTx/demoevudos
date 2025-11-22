@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
+<head>
+  <title>Clientes - Sabor Gourmet</title>
+</head>
+<body>
+<section class="py-4">
+  <h2 class="mb-4">Clientes</h2>
+  <a class="btn btn-success mb-3" th:href="@{/clientes/nuevo}">Nuevo cliente</a>
+
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="c : ${clientes}">
+        <td th:text="${c.id}">1</td>
+        <td th:text="${c.nombre}">Nombre</td>
+        <td th:text="${c.email}">email@ejemplo.com</td>
+        <td th:text="${c.telefono}">12345678</td>
+        <td>
+          <a th:href="@{|/clientes/editar/${c.id}|}" class="btn btn-sm btn-primary">Editar</a>
+          <form th:action="@{|/clientes/eliminar/${c.id}|}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este cliente?');">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+</body>
+</html>

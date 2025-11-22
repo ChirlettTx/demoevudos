@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" tth:fragment="layout">
+<head>
+  <title th:text="${cliente.id == null ? 'Nuevo cliente - Sabor Gourmet' : 'Editar cliente - Sabor Gourmet'}">Formulario cliente</title>
+</head>
+<body>
+<section class="py-4">
+  <h2 class="mb-4" th:text="${cliente.id == null ? 'Nuevo cliente' : 'Editar cliente'}">Formulario</h2>
+
+  <form th:action="@{/clientes/guardar}" method="post" th:object="${cliente}">
+    <input type="hidden" th:field="*{id}" />
+
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre</label>
+      <input id="nombre" type="text" th:field="*{nombre}" class="form-control" required/>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input id="email" type="email" th:field="*{email}" class="form-control" required/>
+    </div>
+
+    <div class="mb-3">
+      <label for="telefono" class="form-label">Teléfono</label>
+      <input id="telefono" type="text" th:field="*{telefono}" class="form-control"/>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</section>
+</body>
+</html>
