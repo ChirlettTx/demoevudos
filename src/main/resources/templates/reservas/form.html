@@ -11,20 +11,14 @@ layout:decorate="~{layout/master}">
     <div class="page-header text-center">
       <h2 th:text="${reservaDTO.id == null ? 'Nueva Reserva' : 'Editar Reserva'}">Formulario</h2>
     </div>
-
     <div class="form-wrapper">
       <form th:action="@{/reservas/guardar}" method="post" th:object="${reservaDTO}">
     <input type="hidden" th:field="*{id}" />
-
-     <!-- Errores globales (como conflictos de horario) -->
     <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger mb-3">
       <ul>
         <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
       </ul>
     </div>
-
-
-    <!-- Cliente -->
     <div class="mb-3">
       <label for="clienteId" class="form-label">Cliente</label>
       <select id="clienteId" th:field="*{clienteId}" class="form-select" required>
@@ -32,8 +26,6 @@ layout:decorate="~{layout/master}">
       </select>
       <div th:if="${#fields.hasErrors('clienteId')}" class="text-danger" th:errors="*{clienteId}"></div>
     </div>
-
-    <!-- Mesa -->
     <div class="mb-3">
       <label for="mesaId" class="form-label">Mesa</label>
       <select id="mesaId" th:field="*{mesaId}" class="form-select" required>
@@ -41,8 +33,6 @@ layout:decorate="~{layout/master}">
       </select>
       <div th:if="${#fields.hasErrors('mesaId')}" class="text-danger" th:errors="*{mesaId}"></div>
     </div>
-
-    <!-- Fecha y Hora -->
     <div class="mb-3">
       <label for="fechaHora" class="form-label">Fecha y hora</label>
       <input id="fechaHora"
@@ -52,8 +42,6 @@ layout:decorate="~{layout/master}">
              required />
       <div th:if="${#fields.hasErrors('fechaHora')}" class="text-danger" th:errors="*{fechaHora}"></div>
     </div>
-
-    <!-- Cantidad de Personas -->
     <div class="mb-3">
       <label for="cantidadPersonas" class="form-label">Cantidad de personas</label>
       <input id="cantidadPersonas"
@@ -64,7 +52,6 @@ layout:decorate="~{layout/master}">
              required />
       <div th:if="${#fields.hasErrors('cantidadPersonas')}" class="text-danger" th:errors="*{cantidadPersonas}"></div>
     </div>
-
         <div class="mt-4">
           <button class="btn btn-primary" type="submit"> Guardar</button>
           <a th:href="@{/reservas}" class="btn btn-secondary"> Cancelar</a>
